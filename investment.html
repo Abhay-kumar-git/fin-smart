@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Calculator - Fin Smart</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">Fin Smart</div>
+        <nav>
+            <ul>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="investment.html">Investment Calculator</a></li>
+                <li><a href="budget.html">Budget Planner</a></li>
+                <li><a href="index.html" class="logout-btn" onclick="logout()">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Investment Calculator Section -->
+    <section class="investment-calculator">
+        <h2>SIP & Investment Calculator</h2>
+
+        <div class="calc-form">
+            <label>Investment Amount (₹):</label>
+            <input type="number" id="sip-amount" placeholder="Enter monthly SIP amount" required>
+
+            <label>Duration (Years):</label>
+            <input type="number" id="sip-duration" placeholder="Enter investment duration" required>
+
+            <label>Expected Return Rate (%):</label>
+            <input type="number" id="sip-rate" placeholder="Annual return rate" required>
+
+            <button onclick="calculateSIP()">Calculate</button>
+        </div>
+
+        <div class="calc-result">
+            <h3>Estimated Returns:</h3>
+            <p id="sip-result">Enter details above to calculate.</p>
+        </div>
+
+        <!-- Graph -->
+        <div class="chart-container">
+            <canvas id="sipChart"></canvas>
+        </div>
+        <li><button id="dark-mode-toggle">🌙 Dark Mode</button></li>
+        <script src="darkmode.js"></script>
+    </section>
+
+    <script src="investment.js"></script>
+
+</body>
+</html>

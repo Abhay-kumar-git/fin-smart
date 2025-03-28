@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Fin Smart</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+</head>
+<body>
+
+    <!-- Notification Box -->
+<div id="notification-box" class="notification hidden"></div>
+    <!-- Header -->
+    <header>
+        <div class="logo">Fin Smart</div>
+        <nav>
+            <ul>
+                <li><button id="dark-mode-toggle">🌙 Dark Mode</button></li>
+
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="investment.html">Investment Calculator</a></li>
+                <li><a href="budget.html">Budget Planner</a></li>
+                <li><a href="index.html" class="logout-btn" onclick="logout()">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Dashboard Content -->
+    <section class="dashboard">
+        <h2>Welcome to Your Expense Dashboard</h2>
+
+      <!-- Recurring Expense Form -->
+<div class="expense-form">
+    <h3>Add Recurring Expense</h3>
+    <input type="text" id="recurring-name" placeholder="Expense Name" required>
+    <input type="number" id="recurring-amount" placeholder="Amount (₹)" required>
+    <select id="recurring-category">
+        <option value="Food">Food</option>
+        <option value="Rent">Rent</option>
+        <option value="Shopping">Shopping</option>
+        <option value="Transport">Transport</option>
+        <option value="Others">Others</option>
+    </select>
+    <button onclick="addRecurringExpense()">Add Recurring Expense</button>
+</div>
+
+<!-- Recurring Expenses List -->
+<div class="expense-list">
+    <h3>Recurring Expenses</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Amount (₹)</th>
+                <th>Category</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="recurring-expense-table">
+            <!-- Recurring expenses will be added here -->
+        </tbody>
+    </table>
+</div>
+
+        <!-- Expense Chart -->
+        <div class="chart-container">
+            <h3>Expense Breakdown</h3>
+            <canvas id="expenseChart"></canvas>
+        </div>
+
+        <!-- Export Expenses Button -->
+<div class="export-container">
+    <button onclick="exportToCSV()">Download Expenses (CSV)</button>
+</div>
+
+<!-- Search & Filter Section -->
+<div class="filter-container">
+    <input type="text" id="search-name" placeholder="Search by name..." onkeyup="filterExpenses()">
+    
+    <select id="filter-category" onchange="filterExpenses()">
+        <option value="">All Categories</option>
+        <option value="Food">Food</option>
+        <option value="Rent">Rent</option>
+        <option value="Shopping">Shopping</option>
+        <option value="Transport">Transport</option>
+        <option value="Others">Others</option>
+    </select>
+
+    <input type="date" id="filter-date" onchange="filterExpenses()">
+    <input type="number" id="filter-min-amount" placeholder="Min Amount" onkeyup="filterExpenses()">
+    <input type="number" id="filter-max-amount" placeholder="Max Amount" onkeyup="filterExpenses()">
+</div>
+
+<!-- Expense List -->
+<div class="expense-list">
+    <h3>Expense Summary</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Amount (₹)</th>
+                <th>Date</th>
+                <th>Payment Method</th>
+                <th>Category</th>
+                <th>Notes</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="expense-table">
+            <!-- Expense items will be added here -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Edit Expense Modal -->
+<!-- <div id="edit-modal" class="modal">
+    <div class="modal-content">
+        <h3>Edit Expense</h3>
+        <input type="text" id="edit-name" placeholder="Expense Name">
+        <input type="number" id="edit-amount" placeholder="Amount">
+        <input type="date" id="edit-date">
+        <select id="edit-payment-method">
+            <option value="Cash">Cash</option>
+            <option value="Card">Card</option>
+            <option value="UPI">UPI</option>
+        </select>
+        <select id="edit-category">
+            <option value="Food">Food</option>
+            <option value="Rent">Rent</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Transport">Transport</option>
+            <option value="Others">Others</option>
+        </select>
+        <textarea id="edit-notes" placeholder="Notes (optional)"></textarea>
+        <button onclick="saveEditExpense()">Save Changes</button>
+        <button onclick="closeEditModal()">Cancel</button>
+    </div>
+</div> -->
+
+<!-- Expense Categories Summary -->
+<div class="chart-container">
+    <h3>Category-Wise Expense Breakdown</h3>
+    <canvas id="categoryChart"></canvas>
+</div>
+<script src="darkmode.js"></script>
+
+<!-- Expense Filters & Sorting -->
+<div class="filter-sort">
+    <select id="filter-category" onchange="filterExpenses()">
+        <option value="all">All Categories</option>
+        <option value="Food">Food</option>
+        <option value="Rent">Rent</option>
+        <option value="Shopping">Shopping</option>
+        <option value="Transport">Transport</option>
+        <option value="Others">Others</option>
+    </select>
+
+    <select id="sort-expense" onchange="sortExpenses()">
+        <option value="date-desc">Newest First</option>
+        <option value="date-asc">Oldest First</option>
+        <option value="amount-desc">Highest Amount</option>
+        <option value="amount-asc">Lowest Amount</option>
+    </select>
+</div>
+
+<!-- Budget Input -->
+<div class="budget-section">
+    <label for="budget">Set Monthly Budget: ₹</label>
+    <input type="number" id="budget" oninput="setBudget()" placeholder="Enter budget">
+    <p id="budget-status"></p>
+</div>
+
+
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <canvas id="expenseChart" width="400" height="200"></canvas>
+    <canvas id="expensePieChart" width="400" height="200"></canvas>
+
+    <button onclick="exportToCSV()">Download Expenses CSV</button>
+
+    <h3>Monthly Expense Summary</h3>
+<table id="monthlySummaryTable">
+    <thead>
+        <tr>
+            <th>Month</th>
+            <th>Total Expense</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+<h3>Category-wise Expense Breakdown</h3>
+<table id="categorySummaryTable">
+    <thead>
+        <tr>
+            <th>Category</th>
+            <th>Total Expense</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+<!-- <h3>Set Monthly Budget</h3>
+<input type="number" id="budgetInput" placeholder="Enter monthly budget">
+<button onclick="setBudget()">Set Budget</button> -->
+
+<!-- <h3>Budget Overview</h3>
+<p>Budget: ₹<span id="budgetAmount">0</span></p>
+<p>Expenses: ₹<span id="totalExpenses">0</span></p>
+<p>Remaining: ₹<span id="remainingBudget">0</span></p>
+<div id="budgetStatus"></div>
+
+<h3>Set Savings Goal</h3>
+<input type="number" id="savingsGoalInput" placeholder="Enter savings goal">
+<button onclick="setSavingsGoal()">Set Goal</button>
+
+<h3>Savings Overview</h3>
+<p>Goal: ₹<span id="savingsGoal">0</span></p>
+<p>Saved: ₹<span id="totalSavings">0</span></p>
+<p>Remaining: ₹<span id="remainingSavings">0</span></p>
+<div id="savingsStatus"></div>
+
+<h3>Investment Growth Tracker</h3>
+<label>Initial Investment (₹):</label>
+<input type="number" id="initialInvestment" placeholder="Enter initial amount">
+<label>Monthly Contribution (₹):</label>
+<input type="number" id="monthlyContribution" placeholder="Enter monthly savings">
+<label>Annual Interest Rate (%):</label>
+<input type="number" id="interestRate" placeholder="Enter interest rate">
+<label>Years:</label>
+<input type="number" id="investmentYears" placeholder="Enter years">
+<button onclick="calculateInvestment()">Calculate Growth</button>
+
+<h3>Investment Projection</h3>
+<p>Future Value: ₹<span id="futureValue">0</span></p>
+<p>Total Interest Earned: ₹<span id="totalInterest">0</span></p>
+<div id="investmentChart"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<canvas id="investmentChart"></canvas>
+
+<h3>Investment Suggestions</h3>
+<p id="investmentAdvice">Enter your details above to get personalized investment advice!</p>
+
+<h3>Goal-Based Savings Tracker</h3>
+
+<label for="goalAmount">🎯 Enter Your Savings Goal:</label>
+<input type="number" id="goalAmount" placeholder="Enter target amount">
+
+<label for="goalDeadline">📅 Goal Deadline (Years):</label>
+<input type="number" id="goalDeadline" placeholder="Enter years">
+
+<button onclick="calculateGoalPlan()">Track My Goal</button>
+
+<h4>Goal Achievement Plan:</h4>
+<p id="goalAdvice">Set your goal to see a personalized savings plan!</p>
+
+<h4>Goal Progress:</h4>
+<div style="width: 100%; background-color: #ddd; border-radius: 10px;">
+    <div id="progressBar" style="width: 0%; height: 20px; background-color: green; text-align: center; line-height: 20px; color: white; border-radius: 10px;">
+        0%
+    </div>
+</div> -->
+
+<!-- <h4>Set Savings Reminder:</h4>
+<input type="number" id="reminderInterval" placeholder="Enter days (e.g., 7)" min="1">
+<button onclick="startSavingsReminder()">Set Reminder</button>
+<p id="reminderStatus"></p>
+
+<h3>Your Savings Trend 📊</h3>
+<canvas id="savingsChart" width="400" height="200"></canvas>
+
+<h4>Record Your Savings:</h4>
+<input type="number" id="savingsAmount" placeholder="Enter amount" min="1">
+<button onclick="saveMoney()">Save Money</button>
+
+
+<h3>🎯 Set Your Savings Goal:</h3>
+<input type="number" id="goalAmount" placeholder="Enter goal amount" min="1">
+<button onclick="setGoal()">Set Goal</button>
+
+<h3>📊 Progress Towards Goal:</h3>
+<div style="width: 100%; background-color: #ccc; border-radius: 10px; overflow: hidden;">
+    <div id="progressBar" style="width: 0%; background-color: green; height: 25px; text-align: center; color: white;">
+        <span id="progressText">0 / 0</span>
+    </div>
+</div>
+
+
+<div id="categorySummary"></div>
+<div id="expenseList"></div> -->
+
+
+    <!-- <button id="downloadCsvBtn">Download CSV</button>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+    <canvas id="investmentChart"></canvas>
+    
+    <script src="dashboard.js"></script>
+</body>
+</html>
